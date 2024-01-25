@@ -9,6 +9,7 @@ app.use(cookieParser());
 app.use(cors());
 
 
-app.get('api/users/currentuser',(req:Request,res:Response)=> {
-    res.send("hi there !!");
-});
+app.get('/api/users/current',(req:Request,res:Response) => {
+
+       res.send('hello friend');
+})
