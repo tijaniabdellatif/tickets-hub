@@ -10,10 +10,11 @@ spec:
   - host: ticketing.dev
     http:
       paths:
-      - pathType: Prefix
-        path: /api/users/?(.*)
+      - pathType: ImplementationSpecific
+        path: /api/users/.*
         backend:
           service:
             name: auth-service
             port:
               number: 80
+
