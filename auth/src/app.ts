@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import {RegisterRouter} from "./routes/signin"; 
 import { ErrorHandler } from './middleware/ErrorHandler';
 import { activatingUser } from './routes/activate-user';
+import { LoginRoute } from './routes/signup';
 
 require('dotenv').config();
 
@@ -15,7 +16,7 @@ app.use(cookieParser());
 app.use(cors());
 
 
-app.use('/api/users',RegisterRouter,activatingUser)
+app.use('/api/users',RegisterRouter,activatingUser,LoginRoute)
 
 app.all('*',(req:Request,res:Response,next:NextFunction) => {
     const error = new Error(`Route ${req.originalUrl} is not found`) as any;

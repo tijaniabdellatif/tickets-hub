@@ -7,8 +7,9 @@ import { createToken } from "../services/token.service";
 import ejs from "ejs";
 import path from "path";
 import { sendMail } from "../services/email.service";
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 import { truncate } from "fs";
+import { sendToken } from "../services/jwt.service";
 
 const connection = new DBHandler();
 
@@ -20,9 +21,13 @@ interface IRegistrationBody {
 }
 
 interface IActivationRequest {
+  activation_code: string;
+  activation_token: string;
+}
 
-      activation_code:string,
-      activation_token:string
+interface ILoginRequest {
+  email: string;
+  password: string;
 }
 
 export const authRegister = CatchAsyncError(
@@ -80,52 +85,73 @@ export const authRegister = CatchAsyncError(
   }
 );
 
+export const activateUser = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { activation_code, activation_token } =
+        req.body as IActivationRequest;
+      const secret: string = "@un12@@//tr";
 
-export const activateUser = CatchAsyncError(async (req:Request,res:Response,next:NextFunction) => {
+      const newUser: { user: IUser; activationCode: string } = jwt.verify(
+        activation_token,
+        secret
+      ) as {
+        user: IUser;
+        activationCode: string;
+      };
 
-     try {
-      const {activation_code,activation_token} = req.body as IActivationRequest;
-      const secret:string = "@un12@@//tr"
+      if (newUser.activationCode !== activation_code) {
+        return next(new CustomError("Invalid activation Code", 400));
+      }
 
-      const newUser: { user: IUser; activationCode: string } =
-        jwt.verify(activation_token, secret) as {
-          user: IUser;
-          activationCode: string;
-        };
+      const { fullname, email, password, username } = newUser.user;
+      await connection.connectToDatabase();
+      const existence = await User.findOne({ email });
 
-        if(newUser.activationCode !== activation_code){
+      if (existence) {
+        return next(new CustomError("Email already exists", 400));
+      }
 
-             return next(new CustomError('Invalid activation Code',400));
-             
-        }
+      await User.create({
+        fullname: fullname,
+        username: username,
+        email: email,
+        password: password,
+      });
 
-        const { fullname, email, password, username } = newUser.user;
-        await connection.connectToDatabase();
-        const existence = await User.findOne({email});
+      await connection.disconnectFromDatabase();
+      return res.status(201).json({
+        success: true,
+        message: "Your email is verified! welcome",
+      });
+    } catch (error: any) {
+      return next(new CustomError("Something is wrong", 500));
+    }
+  }
+);
 
-        if(existence){
+export const loginUser = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email, password } = req.body as ILoginRequest;
 
-            return next(new CustomError("Email already exists", 400));
+      await connection.connectToDatabase();
 
-        }
+      const user = await User.findOne({ email }).select("+password");
+      if (!user) {
+        return next(new CustomError("Invalid credentials : No such user", 400));
+      }
 
-        await User.create({
+      const isPasswordMatch = await user.comparePassword(password);
 
-            fullname:fullname,
-            username:username,
-            email:email,
-            password:password
-        })
+      if (!isPasswordMatch) {
+        return next(new CustomError("Password Incorrect", 400));
+      }
 
-        await connection.disconnectFromDatabase();
-        return res.status(201).json({
-
-             success:true,
-             message:'Your email is verified! welcome'
-        })
-
-     }catch(error:any){
-
-        return next(new CustomError('Something is wrong',500))
-     }
-})
+      await connection.disconnectFromDatabase();
+      sendToken(user, 200, res);
+    } catch (error: any) {
+      return next(new CustomError("Something went wrong", 500));
+    }
+  }
+);
