@@ -1,8 +1,10 @@
 import express,{Request,Response,NextFunction} from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import {RegisterRouter} from "./routes/router"; 
+import {RegisterRouter} from "./routes/signin"; 
 import { ErrorHandler } from './middleware/ErrorHandler';
+import { activatingUser } from './routes/activate-user';
+
 require('dotenv').config();
 
 
@@ -13,7 +15,7 @@ app.use(cookieParser());
 app.use(cors());
 
 
-app.use('/api/users',RegisterRouter)
+app.use('/api/users',RegisterRouter,activatingUser)
 
 app.all('*',(req:Request,res:Response,next:NextFunction) => {
     const error = new Error(`Route ${req.originalUrl} is not found`) as any;
