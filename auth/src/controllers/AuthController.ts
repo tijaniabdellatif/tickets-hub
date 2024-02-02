@@ -7,9 +7,15 @@ import { createToken } from "../services/token.service";
 import ejs from "ejs";
 import path from "path";
 import { sendMail } from "../services/email.service";
-import jwt from "jsonwebtoken";
-import { truncate } from "fs";
-import { sendToken } from "../services/jwt.service";
+import jwt, { JwtPayload, Secret } from "jsonwebtoken";
+import {
+  accessTokenOptions,
+  refresTokenOptions,
+  sendToken,
+} from "../services/jwt.service";
+import { redis } from "../services/redis.service";
+import { env } from "process";
+import { access } from "fs";
 
 const connection = new DBHandler();
 
@@ -155,3 +161,109 @@ export const loginUser = CatchAsyncError(
     }
   }
 );
+
+export const logoutUser = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      res.cookie("access_token", "", { maxAge: 1 });
+      res.cookie("refresh_token", "", { maxAge: 1 });
+      const userId = req.user?._id || "";
+      redis.del(userId);
+      res.status(200).json({
+        success: true,
+        message: "User logged out successfully",
+      });
+    } catch (error: any) {
+      return next(new CustomError("Something went wrong", 500));
+    }
+  }
+);
+
+export const updateAccessToken = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+
+      const refresh_token = req.cookies.refresh_token as string;
+      const envAccessToken = "SFP!5G4k&hdl;$i75cy;E7iZMJ1mKXE" as Secret;
+      const envRefreshToken = "@#<7T&[tCCjhMU`(TiK5^k~/5b6/}" as Secret;
+
+      const decoded = jwt.verify(refresh_token, envRefreshToken) as JwtPayload;
+      const message = {
+
+           decod:"Could Not refresh Token",
+           sess:"Please log in again to access the ressource"
+      };
+
+      if (!decoded) {
+        return next(new CustomError(message.decod, 400));
+      }
+
+      else {
+        const session = await redis.get(decoded.id);
+        if (!session) {
+         
+          return next(new CustomError(message.sess, 400));
+        }
+  
+        const user = JSON.parse(session);
+  
+        const newAccessToken = jwt.sign({ id: user._id }, envAccessToken, {
+          expiresIn: "5m",
+        });
+  
+        const newRefreshToken = jwt.sign({ id: user._id }, envRefreshToken, {
+          expiresIn: "5d",
+        });
+  
+        res.cookie("access_token", newAccessToken, accessTokenOptions);
+        res.cookie("refresh_token", newRefreshToken, refresTokenOptions);
+  
+        req.user = user;
+        await redis.set(user._id, JSON.stringify(user), "EX", 604800);
+        res.status(200).json({
+          success: true,
+          newAccessToken,
+          user,
+        });
+  
+        return res.status(200).json({
+          data: refresh_token,
+        });
+
+      }
+
+     
+    } catch (error: any) {
+      return next(new CustomError(error.message, 500));
+    }
+  }
+);
+
+
+export const currentUser = CatchAsyncError(async(req:Request,res:Response,next:NextFunction) => {
+
+       try {
+
+        const userId = req.user?._id;
+        const userJson = await redis.get(userId);
+        if(userJson){
+
+            const user = JSON.parse(userJson);
+
+            res.status(200).json({
+
+                success:true,
+                user
+            })
+        }
+
+        return next(new CustomError('No user found try again',404));
+      
+
+        
+       } catch (error:any) {
+        
+          return next(new CustomError('Something went wrong',500));
+       }
+})

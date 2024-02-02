@@ -2,6 +2,7 @@ require('dotenv').config();
 import { Response } from "express";
 import { IUser } from "../models/User";
 import { SameSite } from "../enums/Config";
+import {redis} from '../services/redis.service';
 
 interface ITokenOptions {
 
@@ -41,7 +42,7 @@ export const sendToken = (user:IUser,statusCode:number,res:Response) => {
 
     const accessToken = user.signAccessToken();
     const refreshToken = user.signRefreshToken();
-
+    redis.set(user._id,JSON.stringify(user) as any);
     accessTokenOptions.secure = true
 
     res.cookie('access_token',accessToken,accessTokenOptions);
