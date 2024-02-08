@@ -142,14 +142,11 @@ export const loginUser = CatchAsyncError(
       const { email, password } = req.body as ILoginRequest;
 
       await connection.connectToDatabase();
-
       const user = await User.findOne({ email }).select("+password");
       if (!user) {
         return next(new CustomError("Invalid credentials : No such user", 400));
       }
-
       const isPasswordMatch = await user.comparePassword(password);
-
       if (!isPasswordMatch) {
         return next(new CustomError("Password Incorrect", 400));
       }
@@ -246,3 +243,34 @@ export const currentUser = CatchAsyncError(
     }
   }
 );
+
+
+export const deleteUser = CatchAsyncError(async(req:Request,res:Response,next:NextFunction) => {
+
+      try {
+
+        const {id}= req.params;
+          await connection.connectToDatabase();
+          const user = await User.findById(id);
+
+          if(!user){
+
+            return next(new CustomError('No user found',404))
+          }
+
+          await user.deleteOne({id});
+          await redis.del(id);
+          res.cookie("access_token", "", { maxAge: 1 });
+          res.cookie("refresh_token", "", { maxAge: 1 });
+          await connection.disconnectFromDatabase();
+
+          res.status(200).json({
+
+            success:true,
+            message:'User deleted successfully'
+          })
+      }catch(error:any){
+        return next(new CustomError(error.message, 500));
+
+      }
+})

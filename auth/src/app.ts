@@ -8,6 +8,7 @@ import { LoginRoute } from "./routes/signup";
 import { LogoutRoute } from "./routes/log-out";
 import { refreshTokenRoute } from "./routes/update-token";
 import { CurrentUser } from "./routes/current-user";
+import { deleteUser } from "./routes/delete-user";
 
 export const app = express();
 app.use(express.json({ limit: "50mb" }));
@@ -25,7 +26,8 @@ app.use(
   LoginRoute,
   LogoutRoute,
   refreshTokenRoute,
-  CurrentUser
+  CurrentUser,
+  deleteUser
 );
 
 app.all("*", (req: Request, res: Response, next: NextFunction) => {

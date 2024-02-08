@@ -5,7 +5,7 @@ interface IActivation {
   activation_code: string;
 }
 
-export const secret: Secret = "@un12@@//tr";
+export const secret: Secret = process.env.JWT_KEY!;
 
 export const createToken = (user: Object): IActivation => {
   const activationCode: string = Math.floor(
