@@ -1,7 +1,7 @@
 import {Redis} from 'ioredis'
-const REDIS_URL='rediss://default:ea8a04b6c4de436f8662c12e32e3af78@major-panda-45994.upstash.io:45994';
+const REDIS_URL='redis://auth-redis-service.default.svc.cluster.local:6379';
 
-const redisClient = () => {
+const redisClient =  () => {
 
      if(REDIS_URL){
 
