@@ -1,24 +1,36 @@
-import express,{Request,Response,NextFunction} from 'express';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import {RegisterRouter} from "./routes/router"; 
-import { ErrorHandler } from './middleware/ErrorHandler';
-require('dotenv').config();
-
-
+import express, { Request, Response, NextFunction } from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import { RegisterRouter } from "./routes/signin";
+import { ErrorHandler } from "./middleware/ErrorHandler";
+import { activatingUser } from "./routes/activate-user";
+import { LoginRoute } from "./routes/signup";
+import { LogoutRoute } from "./routes/log-out";
+import { refreshTokenRoute } from "./routes/update-token";
+import { CurrentUser } from "./routes/current-user";
 
 export const app = express();
-app.use(express.json({limit:'50mb'}));
+app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
-app.use(cors());
+app.use(cors({
 
+    origin:['http://ticketing.dev'],
+    credentials:true
+}));
 
-app.use('/api/users',RegisterRouter)
+app.use(
+  "/api/users",
+  RegisterRouter,
+  activatingUser,
+  LoginRoute,
+  LogoutRoute,
+  refreshTokenRoute,
+  CurrentUser
+);
 
-app.all('*',(req:Request,res:Response,next:NextFunction) => {
-    const error = new Error(`Route ${req.originalUrl} is not found`) as any;
-    error.statusCode = 404;
-    next(error);
-
-})
+app.all("*", (req: Request, res: Response, next: NextFunction) => {
+  const error = new Error(`Route ${req.originalUrl} is not found`) as any;
+  error.statusCode = 404;
+  next(error);
+});
 app.use(ErrorHandler);

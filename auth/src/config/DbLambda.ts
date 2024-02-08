@@ -3,64 +3,48 @@ import mongoose, { Mongoose } from "mongoose";
 require("dotenv").config();
 
 class Database {
+  private url: string;
+  private dbname: string;
+  private isConnected: boolean;
 
-     private url: string;
-     private dbname:string;
-     private isConnected:boolean
+  constructor() {
+    //this.url = 'mongodb+srv://user_handler:6o8gaDGPHKHqv8NM@atlascluster.h0nxtkp.mongodb.net/?retryWrites=true&w=majority';
+    this.url = "mongodb://auth-mongo-service:27017";
+    this.dbname = `auth-db`;
+    this.isConnected = false;
+  }
 
-     constructor(){
+  async connectToDatabase(): Promise<void> {
+    mongoose.set("strictQuery", true);
 
-        this.url = 'mongodb+srv://user_handler:6o8gaDGPHKHqv8NM@atlascluster.h0nxtkp.mongodb.net/?retryWrites=true&w=majority';
-        this.dbname = `bts-dev`;
-        this.isConnected = false;
-     }
+    if (this.isConnected) {
+      console.log("Mongo Is Already connected");
+      return;
+    }
 
+    try {
+      const action: Mongoose = await mongoose.connect(this.url, {
+        dbName: this.dbname,
+      });
 
-     async connectToDatabase():Promise<void>{
+      this.isConnected = true;
 
-         mongoose.set('strictQuery',true);
+      console.log("Mongo is connected ....", action.Connection.name);
+    } catch (error: any) {
+      throw new MongoAPIError(error.message, {
+        cause: error.stack,
+      });
+    }
+  }
 
-         if(this.isConnected){
+  async disconnectFromDatabase(): Promise<void> {
+    if (!this.isConnected) {
+      await mongoose.connection.close();
+    }
 
-            console.log('Mongo Is Already connected');
-            return;
-         }
-
-
-         try {
-
-             const action:Mongoose = await mongoose.connect(this.url,{
-
-                dbName:this.dbname
-             })
-
-
-
-             this.isConnected = true;
-
-             console.log('Mongo is connected ....',action.Connection.name);
-
-         }catch(error:any){
-
-            throw new MongoAPIError(error.message,{
-                cause:error.stack,
-            });
-
-         }
-           
-     }
-
-
-     async disconnectFromDatabase():Promise<void>{
-
-            if(!this.isConnected){
-
-                  await mongoose.connection.close();
-            }
-
-            console.log('Connection closed ... waiting until the next one');
-            return;
-     }
+    console.log("Connection closed ... waiting until the next one");
+    return;
+  }
 }
 
-export {Database as DBHandler}
+export { Database as DBHandler };
