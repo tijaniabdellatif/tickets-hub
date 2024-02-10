@@ -54,7 +54,6 @@ export const authRegister = CatchAsyncError(
       };
 
       const activationToken = createToken(user);
-
       const activated = activationToken.activation_code;
 
       const dataEmail = {
@@ -76,15 +75,17 @@ export const authRegister = CatchAsyncError(
           template: "activate.ejs",
           data: dataEmail,
         });
-        await connection.disconnectFromDatabase();
-        return res.status(200).json({
-          success: true,
-          message: `Welcome ${user.fullname}, check your email to activate your account`,
-          token: activationToken.token,
-        });
+      
       } catch (error: any) {
         return next(new CustomError(error.message, 500));
       }
+
+      await connection.disconnectFromDatabase();
+      return res.status(200).json({
+        success: true,
+        message: `Welcome ${user.fullname}, check your email to activate your account`,
+        token: activationToken.token,
+      });
     } catch (error: any) {
       return next(new CustomError("Something went wrong", 500));
     }
