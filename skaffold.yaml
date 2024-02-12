@@ -16,3 +16,12 @@ build:
       manual:
       - dest: .
         src: 'src/**/*.ts'
+  - image: abdellatiftijani/front-service
+    context: client
+    docker:
+      dockerfile: Dockerfile
+    sync:
+      manual:
+      - dest: .
+        src: '**/*.{ts,tsx,js,jsx}'
+

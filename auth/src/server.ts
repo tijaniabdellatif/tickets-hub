@@ -5,8 +5,8 @@ const start = async () => {
     throw new Error("No environement variable were found");
   }
 
-  app.listen(80, () => {
-    console.log("Listening on port 8080");
+  app.listen(3005, () => {
+    console.log("Listening on port 3005");
   });
 };
 
