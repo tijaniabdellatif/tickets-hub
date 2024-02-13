@@ -1,7 +1,6 @@
 "use client"
 
 type ErrorStack = {
-
   error:Error,
   reset: () => void
 }
