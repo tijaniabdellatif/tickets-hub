@@ -1,4 +1,6 @@
-apiVersion: apps/v1
+## Mongo deploy simple configuration :
+
+```apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: auth-mongo-depl
@@ -33,4 +35,7 @@ spec:
     protocol: TCP
     port: 27017
     targetPort: 27017
+
+```
+
 

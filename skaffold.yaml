@@ -16,7 +16,7 @@ build:
       manual:
       - dest: .
         src: 'src/**/*.ts'
-  - image: abdellatiftijani/front-service
+  - image: abdellatiftijani/next-client
     context: client
     docker:
       dockerfile: Dockerfile

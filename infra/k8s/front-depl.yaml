@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: front-service
-        image: abdellatiftijani/front-service
+        image: abdellatiftijani/next-client
         ports:
         - containerPort: 3000
 ---
