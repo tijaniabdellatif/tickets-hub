@@ -1,9 +1,10 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: auth-redis-depl
+  name: redis-depl
 spec:
   replicas: 1
+  serviceName: redis-service
   selector:
     matchLabels:
       app: auth-redis
@@ -15,17 +16,32 @@ spec:
       containers:
       - name: auth-redis
         image: redis
-
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: auth-redis-data
+          mountPath: /data/db
+  volumeClaimTemplates:
+  - metadata:
+      name: auth-redis-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 500Mi
+# ClusterIp Service
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-redis-service
+  name: redis-service
 spec:
   selector:
     app: auth-redis
+  type: ClusterIP
   ports:
-  - name: redis-cluster
+  - name: auth-redis-db
     protocol: TCP
     port: 6379
     targetPort: 6379

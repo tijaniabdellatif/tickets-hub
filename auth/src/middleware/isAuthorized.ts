@@ -1,6 +1,5 @@
 import { Request,Response,NextFunction } from "express";
 import { CatchAsyncError } from "../errors/CatchAsyncError";
-import { CustomError } from "../errors/CustomError";
 import { NotAuthorizedError } from "../errors/NotAuthorized";
 
 
@@ -8,6 +7,5 @@ export const isAuthorized = CatchAsyncError(async (req:Request,res:Response,next
     if(!req.user){
         return next(new NotAuthorizedError());
     }
-
     next();
 })

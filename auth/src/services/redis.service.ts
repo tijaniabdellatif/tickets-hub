@@ -1,5 +1,5 @@
 import {Redis} from 'ioredis'
-const REDIS_URL='redis://auth-redis-service.default.svc.cluster.local:6379';
+const REDIS_URL='redis://redis-service.default.svc.cluster.local:6379';
 
 const redisClient =  () => {
 

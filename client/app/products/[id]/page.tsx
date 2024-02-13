@@ -1,11 +1,34 @@
-export default function ProdutDetils({params}:{params:{id:string}}){
+import {Metadata} from 'next';
+import Link from 'next/link';
 
-    console.log(params);
+type Props = {
 
+    params:{
+
+        id:string
+    }
+}
+
+
+
+export const generateMetadata = async ({params}:Props):Promise<Metadata> => {
+    const title = await new Promise(resolve => {
+         setTimeout(() => {   
+            resolve(`Iphone ${params.id}`)
+         },100)
+    })
+    return {
+        title:`Product ${title}`,  
+    }
+
+}
+
+export default function ProdutDetils({params}:Props){
     return(
        <>
-          <h1>Product 1</h1>
+           <h1>Product </h1>
            <p>About the product {params?.id}</p>  
+           
        </> 
     );
 }

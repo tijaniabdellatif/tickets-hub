@@ -8,7 +8,7 @@ class Database {
   private isConnected: boolean;
 
   constructor() {
-    //this.url = 'mongodb+srv://user_handler:6o8gaDGPHKHqv8NM@atlascluster.h0nxtkp.mongodb.net/?retryWrites=true&w=majority';
+   
     this.url = "mongodb://auth-mongo-service.default.svc.cluster.local:27017";
     this.dbname = `auth-db`;
     this.isConnected = false;
