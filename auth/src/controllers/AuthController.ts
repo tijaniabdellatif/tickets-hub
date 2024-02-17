@@ -36,6 +36,18 @@ interface ILoginRequest {
   password: string;
 }
 
+export const testApi = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      return res.status(201).send({
+        data: "Test success",
+      });
+    } catch (errorw: any) {
+      return next(new CustomError("Email already exists", 400));
+    }
+  }
+);
+
 export const authRegister = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -75,7 +87,6 @@ export const authRegister = CatchAsyncError(
           template: "activate.ejs",
           data: dataEmail,
         });
-      
       } catch (error: any) {
         return next(new CustomError(error.message, 500));
       }
@@ -230,13 +241,13 @@ export const currentUser = CatchAsyncError(
     try {
       const userId = req.user?._id;
       const userJson = await redis.get(userId);
-      
+
       if (userJson) {
         const user = JSON.parse(userJson);
         res.status(200).json({
           success: true,
           user: user,
-          data:"data cluster"
+          data: "data cluster",
         });
       }
     } catch (error: any) {
@@ -245,33 +256,29 @@ export const currentUser = CatchAsyncError(
   }
 );
 
+export const deleteUser = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      await connection.connectToDatabase();
+      const user = await User.findById(id);
 
-export const deleteUser = CatchAsyncError(async(req:Request,res:Response,next:NextFunction) => {
-
-      try {
-
-        const {id}= req.params;
-          await connection.connectToDatabase();
-          const user = await User.findById(id);
-
-          if(!user){
-
-            return next(new CustomError('No user found',404))
-          }
-
-          await user.deleteOne({id});
-          await redis.del(id);
-          res.cookie("access_token", "", { maxAge: 1 });
-          res.cookie("refresh_token", "", { maxAge: 1 });
-          await connection.disconnectFromDatabase();
-
-          res.status(200).json({
-
-            success:true,
-            message:'User deleted successfully'
-          })
-      }catch(error:any){
-        return next(new CustomError(error.message, 500));
-
+      if (!user) {
+        return next(new CustomError("No user found", 404));
       }
-})
+
+      await user.deleteOne({ id });
+      await redis.del(id);
+      res.cookie("access_token", "", { maxAge: 1 });
+      res.cookie("refresh_token", "", { maxAge: 1 });
+      await connection.disconnectFromDatabase();
+
+      res.status(200).json({
+        success: true,
+        message: "User deleted successfully",
+      });
+    } catch (error: any) {
+      return next(new CustomError(error.message, 500));
+    }
+  }
+);
