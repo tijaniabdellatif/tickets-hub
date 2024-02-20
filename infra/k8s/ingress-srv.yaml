@@ -7,6 +7,10 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: 'true'
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - tickets.dev
+    secretName: test-tls
   rules:
   - host: tickets.dev
     http:

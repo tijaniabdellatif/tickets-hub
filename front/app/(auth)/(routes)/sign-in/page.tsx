@@ -1,31 +1,23 @@
-"use client"
+"use client";
 import { Button } from '@/components/ui/button'
-import React, { useEffect } from 'react'
-import { useRefreshTokenQuery } from '@/scoope/features/api/apiSlice'
-
-type Props = {}
-
-const Home = (props: Props) => {
-
-  const {isLoading,data} = useRefreshTokenQuery({});
-
-    useEffect(() => {
-         if(!isLoading){
+import { useRefreshTokenQuery } from '@/scoope/features/api/apiSlice';
+import axios from 'axios';
+import { error } from 'console';
+import { useEffect } from 'react';
 
 
 
-             console.log(data);
-         }
-       
-    },[data]);
-  
-  return (
-    <div className='text-3xl font-medium text-sky-700'>
+export default  function Home(){
 
-        <h2>This is a protected page</h2>
-        <Button variant={'destructive'}>Click me</Button>
-    </div>
-  )
+const {data,isLoading,error,isUninitialized} = useRefreshTokenQuery({});
+
+
+console.log(data,isLoading,error);
+  return(
+
+      <>
+      <h1> hello world </h1>
+      </>
+  );
 }
 
-export default Home;

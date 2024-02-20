@@ -13,11 +13,7 @@ spec:
     spec:
       containers:
       - name: front-service
-        image: abdellatiftijani/next-client
-        resources:
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
+        image: abdellatiftijani/client-service
         ports:
         - containerPort: 3000
 

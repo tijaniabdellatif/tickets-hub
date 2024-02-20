@@ -8,6 +8,10 @@ const nextConfig = {
     },
 
     output:"standalone",
+    images:{
+
+        domains:['tickets.dev']
+    }
    
 };
 

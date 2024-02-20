@@ -8,7 +8,7 @@ build:
   local:
     push: false
   artifacts:
-  - image: abdellatiftijani/auth-service
+  - image: abdellatiftijani/authentication-service
     context: auth
     docker:
       dockerfile: Dockerfile
@@ -16,7 +16,7 @@ build:
       manual:
       - dest: .
         src: 'src/**/*.ts'
-  - image: abdellatiftijani/next-client
+  - image: abdellatiftijani/client-service
     context: front
     docker:
       dockerfile: Dockerfile

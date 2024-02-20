@@ -4,6 +4,6 @@ import { testApi } from "../controllers/AuthController";
 
 const router = Router();
 
-router.post('/test',testApi);
+router.get('/currenttest',testApi);
 
 export {router as testRoute};
