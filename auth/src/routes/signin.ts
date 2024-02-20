@@ -4,6 +4,6 @@ import { RegisterValidation } from "../validation/validator";
 
 const router = Router();
 
-router.post('/signin',RegisterValidation,authRegister);
+router.post('/signin',authRegister);
 
 export {router as RegisterRouter};

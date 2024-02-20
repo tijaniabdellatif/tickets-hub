@@ -21,16 +21,16 @@ export const LoginValidation = [
 ];
 
 export const RegisterValidation = [
-  body("email")
+  check("email")
     .exists()
     .withMessage("provide en email")
     .isEmail()
     .withMessage("Please provide a valid email"),
-  body("fullname").exists().withMessage("Please provide a full name"),
+  check("fullname").exists().withMessage("Please provide a full name"),
 
-  body("username").exists().withMessage("Please provide a full name"),
+  check("username").exists().withMessage("Please provide a full name"),
 
-  body("password")
+  check("password")
     .isStrongPassword({
       minLength: 10,
       minNumbers: 2,
