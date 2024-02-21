@@ -1,10 +1,9 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { useRefreshTokenQuery } from "@/scoope/features/api/apiSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { useLogOut } from "@/scoope/features/auth/authSlice";
 import { useEffect, useState } from "react";
 import { useRegisterMutation } from "@/scoope/features/auth/authApi";
+import { useAppSelector } from "@/scoope/store";
+
 
 const styles = {
   title:
@@ -30,13 +29,17 @@ export default function Home() {
 
   });
 
-  const [register,{data,error,isSuccess}] = useRegisterMutation();
+  const stateData = useAppSelector((state) => state.auth);
+  console.log(stateData);
+
+  const [register,{data,error,isSuccess,status}] = useRegisterMutation();
 
   useEffect(() => {
 
       if(isSuccess){
 
          console.log(data?.message);
+         console.log('this is my status : ',status);
       }
 
       if(error){
@@ -53,7 +56,7 @@ export default function Home() {
       
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e:any) => {
 
         e.preventDefault();
         await register(inputs);
