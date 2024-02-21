@@ -25,7 +25,7 @@ const guestRoutes:Array<{designation:LucideIcon,label:string,href:string}> = [
 const SidebarRoutes = (props: Props) => {
   const routes = guestRoutes;
   return (
-    <div className="flex flex-col w-full px-5">
+    <div className="flex flex-col w-full">
       {routes.map((item) => {
         return (
           <SidbarItems
