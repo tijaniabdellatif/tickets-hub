@@ -4,7 +4,9 @@ type Props = {}
 
 const SearchPage = (props: Props) => {
   return (
-    <div>Search page</div>
+    <div className='mt-55 z-50'>
+      <h1>Search page</h1>
+    </div>
   )
 }
 

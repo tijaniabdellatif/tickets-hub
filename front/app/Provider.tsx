@@ -5,7 +5,6 @@ import { Provider } from "react-redux";
 import { store } from "@/scoope/store";
 
 interface ProviderProps {
-
     children: ReactNode
 }
 

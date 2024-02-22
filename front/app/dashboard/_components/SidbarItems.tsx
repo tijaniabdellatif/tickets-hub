@@ -16,8 +16,8 @@ const SidbarItems = ({  designation: Icon, label, href }: SidebarItems) => {
   const pathname = usePathname();
   const router = useRouter();
 
-  const isActive = (pathname === '/' && href === "/") || 
-  pathname === href || pathname?.startsWith(`${href}/`);
+  const isActive = (pathname === '/dashboard' && href === "/dashboard") || 
+  pathname === href || pathname?.startsWith(`/${href}/`);
 
   const handleClick = () => {
 

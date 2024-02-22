@@ -1,17 +1,23 @@
 import React from 'react';
 import {Menu} from 'lucide-react'
-import { Sheet,SheetContent,SheetTrigger } from '@/components/ui/sheet';
+import { Sheet,SheetContent,SheetTrigger,SheetClose } from '@/components/ui/sheet';
 import Sidebard from './Sidebard';
-type Props = {}
+type Props = {
+
+   
+}
 
 const MobileSidebar = (props: Props) => {
   return (
      <Sheet key='left'>
-        <SheetTrigger asChild className='md:hidden pr-4 hover:opacity-75 transition'>
-        <Menu size={40} />
+        <SheetTrigger className='md:hidden pr-4 hover:opacity-75 transition'>
+        <Menu size={25} />
         </SheetTrigger>
         <SheetContent side='left' className='p-0 bg-white'>
-            <Sidebard />
+         <SheetClose asChild>
+               <Sidebard   />
+         </SheetClose>
+           
         </SheetContent>
      </Sheet>
   )
