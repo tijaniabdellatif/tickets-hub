@@ -11,7 +11,21 @@ const nextConfig = {
     images:{
 
         domains:['tickets.dev']
-    }
+    },
+
+    async redirects() {
+        
+         return [
+
+            {
+                source:'/',
+                destination:"/home",
+                permanent:true,
+                basePath:false,
+            }
+         ];
+        
+      },
    
 };
 
